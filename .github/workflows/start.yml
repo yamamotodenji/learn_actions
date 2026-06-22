@@ -1,0 +1,12 @@
+name: start
+on:
+  push:
+    branches:
+      - main
+jobs:
+  start:
+    runs-on: ubuntu-latest
+    steps:
+      - name: first step
+        run: echo "Hello"
+
