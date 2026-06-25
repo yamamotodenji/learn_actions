@@ -1,0 +1,15 @@
+name: go_test
+on:
+    pull_request:
+        paths: [ "go/**/*.go" ]
+    push:
+        paths: [ "go/**/*.go" ]
+jobs:
+    go_test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v7
+            - uses: actions/setup-go@v5
+              with:
+                  go-version: 1.26
+            - run: go test go/src/*.go
