@@ -1,0 +1,31 @@
+name: Static analysis
+
+on:
+  push:
+    paths: [ ".github/workflows/**.yml" ]
+
+# ワークフロー全体におけるデフォルトの設定を定義します。
+defaults:
+  run:
+    # run ステップで実行されるコマンドはすべてデフォルトで bash シェルを使用します。
+    shell: bash
+
+# 同時に実行されるジョブの制御（並行性）を定義します。
+concurrency:
+  # ジョブをグループ化する識別子。同じワークフロー名とブランチ名の組み合わせをグループとします。
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  # 同じグループ of 新しいジョブが起動した場合、実行中の古いジョブを自動的にキャンセル（終了）します。
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - run: |
+          # Docker コンテナを使用して、GitHub Actions の YAML シンタックスチェッカーである actionlint を実行します。
+          # --rm: コンテナ終了時に自動でコンテナを削除します。
+          # -v: ホストの現在ディレクトリ ($(pwd)) をコンテナ内の同じパスにマウントします。
+          # -w: コンテナ内の作業ディレクトリをマウントしたパスに設定します。
+          docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" rhysd/actionlint:latest
